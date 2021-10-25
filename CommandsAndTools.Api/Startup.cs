@@ -13,6 +13,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using CommandsAndTools.Api.Data;
 using CommandsAndTools.Api.GraphQL;
+using CommandsAndTools.Api.GraphQL.Commands;
 using CommandsAndTools.Api.GraphQL.Platforms;
 using GraphQL.Server.Ui.Voyager;
 using Microsoft.EntityFrameworkCore;
@@ -38,8 +39,14 @@ namespace CommandsAndTools.Api
             services
                 .AddGraphQLServer()
                 .AddQueryType<Query>()
+                .AddMutationType<Mutation>()
+                .AddSubscriptionType<Subscription>()
                 .AddType<PlatformType>()
-                .AddProjections();
+                .AddType<CommandType>()
+                .AddFiltering()
+                .AddSorting()
+                .AddInMemorySubscriptions();
+                //.AddProjections(); //Not needed when we declare explicit in Types fetching of child objects
 
             services.AddControllers();
             services.AddSwaggerGen(c =>
@@ -59,6 +66,8 @@ namespace CommandsAndTools.Api
             }
 
             app.UseHttpsRedirection();
+
+            app.UseWebSockets();
 
             app.UseRouting();
 
